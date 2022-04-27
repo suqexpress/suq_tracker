@@ -31,7 +31,7 @@ class _SalesManRouteState extends State<SalesManRoute> {
     var data = event.value;
     data.forEach((key2, value2) async {
       var date = DateTime.fromMillisecondsSinceEpoch(int.parse(key2));
-      var times=date.toString().substring(10,16);
+      var times = date.toString().substring(10, 16);
       print("time $times");
       time.add(key2);
       DatabaseReference ref3 = FirebaseDatabase.instance
@@ -46,11 +46,12 @@ class _SalesManRouteState extends State<SalesManRoute> {
       var pointer = Marker(
           markerId: MarkerId(data['latitude'].toString()),
           position: LatLng(data['latitude'], data['longitude']),
-          infoWindow: InfoWindow(title: times,
+          infoWindow: InfoWindow(
+            title: times,
 
-              // title: (data['Name'].toString() == 'null')
-              //     ? widget.number.toString()
-              //     : data['Name'].toString()
+            // title: (data['Name'].toString() == 'null')
+            //     ? widget.number.toString()
+            //     : data['Name'].toString()
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueRed,
@@ -79,21 +80,24 @@ class _SalesManRouteState extends State<SalesManRoute> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         leading: InkWell(
-          onTap: ()=>Navigator.pop(context),
+          onTap: () => Navigator.pop(context),
           child: Padding(
-            padding: const EdgeInsets.only(left: 15,top: 15),
+            padding: const EdgeInsets.only(left: 15, top: 15),
             child: Container(
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(Icons.arrow_back_ios,color: Colors.black,),
+              child: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              ),
             ),
           ),
         ),
@@ -107,7 +111,11 @@ class _SalesManRouteState extends State<SalesManRoute> {
               width: 300,
               child: Padding(
                 padding: const EdgeInsets.all(10),
-                child: Center(child: Text(widget.number.toString(),style: TextStyle(color: Colors.black),)),
+                child: Center(
+                    child: Text(
+                  widget.number.toString(),
+                  style: TextStyle(color: Colors.black),
+                )),
               )),
         ),
       ),

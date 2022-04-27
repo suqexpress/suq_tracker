@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -23,70 +22,79 @@ class _MapScreenState extends State<MapScreen> {
   bool _serviceEnabled = false;
   LocationData _locationData;
   DateTime now = DateTime.now();
-  double lat=24.845143620775687;
-  double long=67.14359441534076;
- Set<Marker> marker={};
+  double lat = 24.845143620775687;
+  double long = 67.14359441534076;
+  Set<Marker> marker = {};
   Completer<GoogleMapController> _controller = Completer();
- getMarker()async{
-   List time= [];
-   String formatter = DateFormat('dd-MM-yyyy').format(now);
-   DatabaseReference ref = FirebaseDatabase.instance.reference().child('Salesmen');
-   Stream<Event> stream = ref.onValue;
-   stream.listen((Event event) {
-     var data = event.snapshot.value;
-     var todayName;
-     data.forEach((key, value){
+  getMarker() async {
+    List time = [];
+    String formatter = DateFormat('dd-MM-yyyy').format(now);
+    DatabaseReference ref =
+        FirebaseDatabase.instance.reference().child('Salesmen');
+    Stream<Event> stream = ref.onValue;
+    stream.listen((Event event) {
+      var data = event.snapshot.value;
+      var todayName;
+      data.forEach((key, value) {
+        DatabaseReference ref1 =
+            FirebaseDatabase.instance.reference().child('Salesmen').child(key);
+        Stream<Event> stream = ref1.onValue;
+        stream.listen((Event event) {
+          var data = event.snapshot.value;
+          data.forEach((key1, value1) {
+            if (key1.toString() == formatter.toString()) {
+              todayName = key;
+              // print(todayName);
+              DatabaseReference ref2 = FirebaseDatabase.instance
+                  .reference()
+                  .child('Salesmen')
+                  .child(key)
+                  .child(key1);
+              Stream<Event> stream = ref2.onValue;
+              stream.listen((Event event) {
+                var data = event.snapshot.value;
+                data.forEach((key2, value2) {
+                  time.add(key2);
+                  // print(key);
+                });
+                DatabaseReference ref3 = FirebaseDatabase.instance
+                    .reference()
+                    .child('Salesmen')
+                    .child(key)
+                    .child(key1)
+                    .child(time.last);
+                Stream<Event> stream = ref3.onValue;
+                stream.listen((Event event) {
+                  var data = event.snapshot.value;
+                  var pointer = Marker(
+                      markerId: MarkerId(data['latitude'].toString()),
+                      position: LatLng(data['latitude'], data['longitude']),
+                      infoWindow: InfoWindow(
+                          title: (data['Name'].toString() == 'null')
+                              ? key.toString()
+                              : data['Name'].toString()),
+                      icon: BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueRed,
+                      ));
+                  print(data['latitude']);
+                  print(data['longitude']);
+                  marker.add(pointer);
+                });
+                marker = {};
+                // print(time.last);
+                // print('hello');
 
-       DatabaseReference ref1 = FirebaseDatabase.instance.reference().child('Salesmen').child(key);
-       Stream<Event> stream = ref1.onValue;
-       stream.listen((Event event) {
-         var data = event.snapshot.value;
-         data.forEach((key1,value1){
-           if(key1.toString()==formatter.toString()){
-             todayName=key;
-             // print(todayName);
-             DatabaseReference ref2 = FirebaseDatabase.instance.reference().child('Salesmen').child(key).child(key1);
-             Stream<Event> stream = ref2.onValue;
-             stream.listen((Event event) {
-               var data = event.snapshot.value;
-               data.forEach((key2,value2) {
-                 time.add(key2);
-                 // print(key);
-               });
-               DatabaseReference ref3 = FirebaseDatabase.instance.reference().child('Salesmen').child(key).child(key1).child(time.last);
-               Stream<Event> stream = ref3.onValue;
-               stream.listen((Event event) {
-                 var data = event.snapshot.value;
-                 var pointer=Marker(
-                     markerId: MarkerId(data['latitude'].toString()),
-                     position: LatLng(data['latitude'], data['longitude']),
-                     infoWindow: InfoWindow(title: (data['Name'].toString()=='null') ? key.toString():data['Name'].toString()),
-                     icon: BitmapDescriptor.defaultMarkerWithHue(
-                       BitmapDescriptor.hueRed,
-                     )
-                 );
-                 print(data['latitude']);
-                 print(data['longitude']);
-                marker.add(pointer);
-               });
-               marker={};
-               // print(time.last);
-               // print('hello');
+                setState(() {});
+              });
+            }
+          });
+        });
+      });
+    });
+    setState(() {});
+  }
 
-               setState(() {
-               });
-             }
-             );
-           }
-         });
-       });
-     });
-   });
-   setState(() {
-
-   });
- }
-  getLocation()async{
+  getLocation() async {
     _serviceEnabled = await location.serviceEnabled();
     _serviceEnabled = await location.requestService();
 
@@ -103,42 +111,46 @@ class _MapScreenState extends State<MapScreen> {
             // location.hasPermission(locationPermission.);
             if (!_locationService) {
               print('denied');
-              return;}} else {print("already enabled");}} else {print('denied');return;}
+              return;
+            }
+          } else {
+            print("already enabled");
+          }
+        } else {
+          print('denied');
+          return;
+        }
       }
-    }
-    else{
+    } else {
       _locationData = await location.getLocation();
 
       final GoogleMapController controller = await _controller.future;
       controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-          target: LatLng(_locationData.latitude, _locationData.longitude),
-          zoom: 10,
+        target: LatLng(_locationData.latitude, _locationData.longitude),
+        zoom: 10,
       )));
 
-      lat=_locationData.latitude;
-      long=_locationData.longitude;
-      setState(() {
-      });
-
+      lat = _locationData.latitude;
+      long = _locationData.longitude;
+      setState(() {});
     }
-
-
   }
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
- @override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getMarker();
     getLocation();
   }
+
   @override
   Widget build(BuildContext context) {
-
-
-    return SafeArea(child: Scaffold(
-        key: _scaffoldKey,
-    extendBodyBehindAppBar: true,
+    return SafeArea(
+        child: Scaffold(
+      key: _scaffoldKey,
+      extendBodyBehindAppBar: true,
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -159,7 +171,8 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
             ListTile(
-              onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>SalesmanList())),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SalesmanList())),
               leading: Icon(Icons.account_circle),
               title: Text('Salesman'),
             ),
@@ -170,128 +183,132 @@ class _MapScreenState extends State<MapScreen> {
           ],
         ),
       ),
-     appBar: AppBar(
-       elevation: 0.0,
-    backgroundColor:Colors.transparent ,
-        leading:Builder(
-          builder: (context)=> Padding(
-            padding: const EdgeInsets.only(left: 15,top: 15),
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: Colors.transparent,
+        leading: Builder(
+          builder: (context) => Padding(
+            padding: const EdgeInsets.only(left: 15, top: 15),
             child: InkWell(
-              onTap:() =>Scaffold.of(context).openDrawer(),// <-- Opens drawer.,
+              onTap: () =>
+                  Scaffold.of(context).openDrawer(), // <-- Opens drawer.,
               child: Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(Icons.menu,color: Colors.black,),
+                child: Icon(
+                  Icons.menu,
+                  color: Colors.black,
+                ),
               ),
             ),
           ),
         ),
-       title: Padding(
-         padding: const EdgeInsets.only(top: 15),
-         child: Container(
-             decoration: BoxDecoration(
-               color: Colors.white,
-               borderRadius: BorderRadius.circular(10),
-             ),
-           width: 300,
-             child: Padding(
-               padding: const EdgeInsets.all(10),
-               child: Center(child: Text("SKR Tracker",style: TextStyle(color: Colors.black),)),
-             )),
-       ),
-       actions: [
-       Padding(
-         padding: const EdgeInsets.only(right: 15,top: 15),
-         child: InkWell(
-                 onTap: (){
-                   setState(() {
-                     getMarker();
-                     getLocation();
-                   });
-                 },
-                 child: Container(
-                   padding: EdgeInsets.all(10),
-                   decoration: BoxDecoration(
-                     color: Colors.white,
-                     borderRadius: BorderRadius.circular(10),
-                   ),
-                   child: Icon(Icons.refresh,color: Colors.black,),
-                 ),
-               ),
-       ),
-       ],
+        title: Padding(
+          padding: const EdgeInsets.only(top: 15),
+          child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              width: 300,
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Center(
+                    child: Text(
+                  "SKR Tracker",
+                  style: TextStyle(color: Colors.black),
+                )),
+              )),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 15, top: 15),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  getMarker();
+                  getLocation();
+                });
+              },
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.refresh,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Container(
-        child: Stack(
-          children: [
-
-            GoogleMap(
+          child: Stack(
+        children: [
+          GoogleMap(
               mapType: MapType.normal,
-              initialCameraPosition:CameraPosition(
-                target: LatLng(lat,long ),
+              initialCameraPosition: CameraPosition(
+                target: LatLng(lat, long),
                 zoom: 14.4746,
               ),
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
-              markers:marker.map((e) => e).toSet()
-            ),
-            // Container(
-            //   padding: EdgeInsets.only(top: 20),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //     children: [
-            //       InkWell(
-            //       onTap:() => {
-            //         ScaffoldState().openDrawer(),
-            //         print("error")
-            // } ,// <-- Opens drawer.,
-            //         child: Container(
-            //           padding: EdgeInsets.all(10),
-            //           decoration: BoxDecoration(
-            //             color: Colors.white,
-            //             borderRadius: BorderRadius.circular(10),
-            //           ),
-            //           child: Icon(Icons.menu),
-            //         ),
-            //       ),
-            //       Container(
-            //         padding: EdgeInsets.symmetric(horizontal: 25,vertical: 10),
-            //         decoration: BoxDecoration(
-            //           color: Colors.white,
-            //           borderRadius: BorderRadius.circular(10),
-            //         ),
-            //         child: Text("Current Location",style: TextStyle(fontSize: 20),),
-            //       ),
-            //       InkWell(
-            //         onTap: (){
-            //           setState(() {
-            //             getMarker();
-            //             getLocation();
-            //           });
-            //         },
-            //         child: Container(
-            //           padding: EdgeInsets.all(10),
-            //           decoration: BoxDecoration(
-            //             color: Colors.white,
-            //             borderRadius: BorderRadius.circular(10),
-            //           ),
-            //           child: Icon(Icons.refresh),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-          ],
-        )
-      ),
-    )
-    );
-
+              markers: marker.map((e) => e).toSet()),
+          // Container(
+          //   padding: EdgeInsets.only(top: 20),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: [
+          //       InkWell(
+          //       onTap:() => {
+          //         ScaffoldState().openDrawer(),
+          //         print("error")
+          // } ,// <-- Opens drawer.,
+          //         child: Container(
+          //           padding: EdgeInsets.all(10),
+          //           decoration: BoxDecoration(
+          //             color: Colors.white,
+          //             borderRadius: BorderRadius.circular(10),
+          //           ),
+          //           child: Icon(Icons.menu),
+          //         ),
+          //       ),
+          //       Container(
+          //         padding: EdgeInsets.symmetric(horizontal: 25,vertical: 10),
+          //         decoration: BoxDecoration(
+          //           color: Colors.white,
+          //           borderRadius: BorderRadius.circular(10),
+          //         ),
+          //         child: Text("Current Location",style: TextStyle(fontSize: 20),),
+          //       ),
+          //       InkWell(
+          //         onTap: (){
+          //           setState(() {
+          //             getMarker();
+          //             getLocation();
+          //           });
+          //         },
+          //         child: Container(
+          //           padding: EdgeInsets.all(10),
+          //           decoration: BoxDecoration(
+          //             color: Colors.white,
+          //             borderRadius: BorderRadius.circular(10),
+          //           ),
+          //           child: Icon(Icons.refresh),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+        ],
+      )),
+    ));
   }
-  }
-
-
+}

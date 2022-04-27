@@ -8,15 +8,17 @@ class SalesmanList extends StatefulWidget {
 }
 
 class _SalesmanListState extends State<SalesmanList> {
+  List name = [];
   List num = [];
-  getNumber()async  {
+  DateTime now = DateTime.now();
+  getNumber() async {
     DatabaseReference ref =
         FirebaseDatabase.instance.reference().child('Salesmen');
     DataSnapshot event = await ref.once();
-      var data = event.value;
-      data.forEach((key, value){
-        num.add(key.toString());
-      });
+    var data = event.value;
+    data.forEach((key, value) {
+      num.add(key.toString());
+    });
     setState(() {});
   }
 
