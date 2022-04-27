@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:skr_tracker/date_list_screen.dart';
+import 'package:skr_tracker/datelistforsalesman.dart';
 
 class SalesmanList extends StatefulWidget {
   @override
@@ -67,7 +67,7 @@ class _SalesmanListState extends State<SalesmanList> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    DateList(number: num[index]))),
+                                    DateListForSalesman(number: num[index]))),
                         child: CircleAvatar(
                             backgroundColor: Colors.white,
                             child: Icon(

@@ -4,16 +4,16 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class SalesManRoute extends StatefulWidget {
-  SalesManRoute({this.number, this.date});
+class DeliveryRoute extends StatefulWidget {
+  DeliveryRoute({this.number, this.date});
   final number;
   final date;
 
   @override
-  State<SalesManRoute> createState() => _SalesManRouteState();
+  State<DeliveryRoute> createState() => _DeliveryRouteState();
 }
 
-class _SalesManRouteState extends State<SalesManRoute> {
+class _DeliveryRouteState extends State<DeliveryRoute> {
   double lat = 24.845143620775687;
   double long = 67.14359441534076;
   Set<Marker> marker = {};
@@ -24,7 +24,7 @@ class _SalesManRouteState extends State<SalesManRoute> {
   getMarker() async {
     DatabaseReference ref2 = FirebaseDatabase.instance
         .reference()
-        .child('Salesmen')
+        .child('Delivery')
         .child(widget.number.toString())
         .child(widget.date.toString());
     DataSnapshot event = await ref2.once();
@@ -36,7 +36,7 @@ class _SalesManRouteState extends State<SalesManRoute> {
       time.add(key2);
       DatabaseReference ref3 = FirebaseDatabase.instance
           .reference()
-          .child('Salesmen')
+          .child('Delivery')
           .child(widget.number.toString())
           .child(widget.date.toString())
           .child(key2);
@@ -54,7 +54,7 @@ class _SalesManRouteState extends State<SalesManRoute> {
             //     : data['Name'].toString()
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueRed,
+            BitmapDescriptor.hueGreen,
           ));
       marker.add(pointer);
       _poly.add(LatLng(data['latitude'], data['longitude']));

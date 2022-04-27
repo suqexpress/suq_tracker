@@ -1,23 +1,20 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:skr_tracker/delivery_list.dart';
-import 'package:skr_tracker/delivery_live_location.dart';
 import 'package:skr_tracker/salesman_list_screen.dart';
 
-class MapScreen extends StatefulWidget {
+class DeliveryMapScreen extends StatefulWidget {
+  const DeliveryMapScreen({Key key}) : super(key: key);
+
   @override
-  State<MapScreen> createState() => _MapScreenState();
+  State<DeliveryMapScreen> createState() => _DeliveryMapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _DeliveryMapScreenState extends State<DeliveryMapScreen> {
   Location location = new Location();
   bool _serviceEnabled = false;
   LocationData _locationData;
@@ -28,22 +25,20 @@ class _MapScreenState extends State<MapScreen> {
   bool isLoading = false;
   Completer<GoogleMapController> _controller = Completer();
 
-  getMarker() async {
-    setState(() {
-      isLoading = true;
-    });
+  getDelivery() async {
     List time = [];
     String formatter = DateFormat('dd-MM-yyyy').format(now);
-    DatabaseReference ref =
-        FirebaseDatabase.instance.reference().child('Salesmen');
-    Stream<Event> stream = ref.onValue;
-    stream.listen((Event event) async {
+    DatabaseReference ref3 =
+        FirebaseDatabase.instance.reference().child('Delivery');
+    Stream<Event> streams = ref3.onValue;
+    streams.listen((Event event) async {
       var data = await event.snapshot.value;
       var todayName;
-      data.forEach((key, value) {
-        DatabaseReference ref1 =
-            FirebaseDatabase.instance.reference().child('Salesmen').child(key);
-        Stream<Event> stream = ref1.onValue;
+      data.forEach((key, value) async {
+        print("name: $key");
+        DatabaseReference ref4 =
+            FirebaseDatabase.instance.reference().child('Delivery').child(key);
+        Stream<Event> stream = ref4.onValue;
         stream.listen((Event event) {
           var data = event.snapshot.value;
           data.forEach((key1, value1) {
@@ -52,7 +47,7 @@ class _MapScreenState extends State<MapScreen> {
               // print(todayName);
               DatabaseReference ref2 = FirebaseDatabase.instance
                   .reference()
-                  .child('Salesmen')
+                  .child('Delivery')
                   .child(key)
                   .child(key1);
               Stream<Event> stream = ref2.onValue;
@@ -64,26 +59,30 @@ class _MapScreenState extends State<MapScreen> {
                 });
                 DatabaseReference ref3 = FirebaseDatabase.instance
                     .reference()
-                    .child('Salesmen')
+                    .child('Delivery')
                     .child(key)
                     .child(key1)
                     .child(time.last);
                 Stream<Event> stream = ref3.onValue;
-                stream.listen((Event event) {
-                  var data = event.snapshot.value;
+                stream.listen((Event event) async {
+                  var data = await event.snapshot.value;
                   var pointer = Marker(
                       markerId: MarkerId(data['latitude'].toString()),
                       position: LatLng(data['latitude'], data['longitude']),
                       infoWindow: InfoWindow(
-                          title: (data['Name'].toString() == 'null')
-                              ? key.toString()
-                              : data['Name'].toString()),
+                        title: key,
+                      ),
                       icon: BitmapDescriptor.defaultMarkerWithHue(
-                        BitmapDescriptor.hueRed,
+                        BitmapDescriptor.hueGreen,
                       ));
+                  print(data['latitude']);
+                  print(data['longitude']);
                   marker.add(pointer);
+                  print(key);
+                  print(marker.length);
                   setState(() {});
                 });
+
                 // print(time.last);
                 // print('hello');
               });
@@ -92,60 +91,15 @@ class _MapScreenState extends State<MapScreen> {
         });
       });
     });
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  getLocation() async {
-    _serviceEnabled = await location.serviceEnabled();
-    _serviceEnabled = await location.requestService();
-
-    if (!_serviceEnabled) {
-      _serviceEnabled = await Permission.location.isGranted;
-      print("location permission: " + _serviceEnabled.toString());
-      if (!_serviceEnabled) {
-        var locationPermission = await Permission.location.request();
-        print("permission ${locationPermission}");
-        if (locationPermission.isGranted) {
-          bool temp = await location.serviceEnabled();
-          if (!temp) {
-            bool _locationService = await location.requestService();
-            // location.hasPermission(locationPermission.);
-            if (!_locationService) {
-              print('denied');
-              return;
-            }
-          } else {
-            print("already enabled");
-          }
-        } else {
-          print('denied');
-          return;
-        }
-      }
-    } else {
-      _locationData = await location.getLocation();
-
-      final GoogleMapController controller = await _controller.future;
-      controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(_locationData.latitude, _locationData.longitude),
-        zoom: 10,
-      )));
-
-      lat = _locationData.latitude;
-      long = _locationData.longitude;
-      setState(() {});
-    }
+    setState(() {});
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
-    getMarker();
-    getLocation();
     // TODO: implement initState
     super.initState();
+    getDelivery();
   }
 
   @override
@@ -174,21 +128,10 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
             ListTile(
-              onTap: () {},
-              leading: Icon(Icons.account_circle),
-              title: Text('Salesman - Live'),
-            ),
-            ListTile(
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SalesmanList())),
-              leading: Icon(Icons.list_alt),
-              title: Text('Salesman - List'),
-            ),
-            ListTile(
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => DeliveryMapScreen())),
-              leading: Icon(Icons.label_important),
-              title: Text('Delivery - live'),
+              leading: Icon(Icons.account_circle),
+              title: Text('Salesman - Live'),
             ),
             ListTile(
               onTap: () => Navigator.push(context,
@@ -238,7 +181,7 @@ class _MapScreenState extends State<MapScreen> {
                 padding: const EdgeInsets.all(10),
                 child: Center(
                     child: Text(
-                  "Salesman - Live",
+                  "Delivery - Live",
                   style: TextStyle(color: Colors.black),
                 )),
               )),
@@ -249,8 +192,7 @@ class _MapScreenState extends State<MapScreen> {
             child: InkWell(
               onTap: () {
                 setState(() {
-                  getMarker();
-                  getLocation();
+                  getDelivery();
                 });
               },
               child: Container(

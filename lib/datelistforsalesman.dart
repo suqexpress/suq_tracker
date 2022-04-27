@@ -2,21 +2,22 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:skr_tracker/salesman_route_screen.dart';
 
-class DateList extends StatefulWidget {
-  DateList({this.number});
+class DateListForSalesman extends StatefulWidget {
+  DateListForSalesman({this.number});
   final number;
 
   @override
-  State<DateList> createState() => _DateListState();
+  State<DateListForSalesman> createState() => _DateListForSalesmanState();
 }
 
-class _DateListState extends State<DateList> {
+class _DateListForSalesmanState extends State<DateListForSalesman> {
   List<DateTime> date = [];
   getDate() async {
     DatabaseReference ref = FirebaseDatabase.instance
         .reference()
         .child('Salesmen')
         .child(widget.number.toString());
+    print(widget.number);
     DataSnapshot event = await ref.once();
     var data = event.value;
     data.forEach((key, value) {
