@@ -8,9 +8,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:skr_tracker/delivery_list.dart';
-import 'package:skr_tracker/delivery_live_location.dart';
-import 'package:skr_tracker/salesman_list_screen.dart';
+import 'package:skr_tracker/delivery_screen/delivery_list.dart';
+import 'package:skr_tracker/delivery_screen/delivery_live_location.dart';
+import 'package:skr_tracker/new_salesman/new_salesman_list.dart';
+import 'package:skr_tracker/old_salesman/salesman_list_screen.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -35,14 +36,14 @@ class _MapScreenState extends State<MapScreen> {
     List time = [];
     String formatter = DateFormat('dd-MM-yyyy').format(now);
     DatabaseReference ref =
-        FirebaseDatabase.instance.reference().child('Salesmen');
+        FirebaseDatabase.instance.reference().child('Salesman');
     Stream<Event> stream = ref.onValue;
     stream.listen((Event event) async {
       var data = await event.snapshot.value;
       var todayName;
       data.forEach((key, value) {
         DatabaseReference ref1 =
-            FirebaseDatabase.instance.reference().child('Salesmen').child(key);
+            FirebaseDatabase.instance.reference().child('Salesman').child(key);
         Stream<Event> stream = ref1.onValue;
         stream.listen((Event event) {
           var data = event.snapshot.value;
@@ -52,7 +53,7 @@ class _MapScreenState extends State<MapScreen> {
               // print(todayName);
               DatabaseReference ref2 = FirebaseDatabase.instance
                   .reference()
-                  .child('Salesmen')
+                  .child('Salesman')
                   .child(key)
                   .child(key1);
               Stream<Event> stream = ref2.onValue;
@@ -64,7 +65,7 @@ class _MapScreenState extends State<MapScreen> {
                 });
                 DatabaseReference ref3 = FirebaseDatabase.instance
                     .reference()
-                    .child('Salesmen')
+                    .child('Salesman')
                     .child(key)
                     .child(key1)
                     .child(time.last);
@@ -180,9 +181,15 @@ class _MapScreenState extends State<MapScreen> {
             ),
             ListTile(
               onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => NewSalesmanList())),
+              leading: Icon(Icons.assessment_sharp),
+              title: Text('Salesman - List - New'),
+            ),
+            ListTile(
+              onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SalesmanList())),
               leading: Icon(Icons.list_alt),
-              title: Text('Salesman - List'),
+              title: Text('Salesman - List - Old'),
             ),
             ListTile(
               onTap: () => Navigator.push(context,

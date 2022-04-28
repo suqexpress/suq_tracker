@@ -64,41 +64,41 @@ class _DateListForSalesmanState extends State<DateListForSalesman> {
                     border: Border(
                         bottom:
                             BorderSide(color: Colors.grey.withOpacity(0.5)))),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        date[index].toString().substring(0, 10),
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          var data = date[index];
-                          print(date[index]);
-                          var day = data.toString().substring(8, 10);
-                          var month = data.toString().substring(5, 7);
-                          var year = data.toString().substring(0, 4);
-                          String curDate = "$day-$month-$year";
-                          print(curDate);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SalesManRoute(
-                                        date: curDate,
-                                        number: widget.number,
-                                      )));
-                        },
-                        child: CircleAvatar(
+                child: InkWell(
+                  onTap: () {
+                    var data = date[index];
+                    print(date[index]);
+                    var day = data.toString().substring(8, 10);
+                    var month = data.toString().substring(5, 7);
+                    var year = data.toString().substring(0, 4);
+                    String curDate = "$day-$month-$year";
+                    print(curDate);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SalesManRoute(
+                              date: curDate,
+                              number: widget.number,
+                            )));
+                  },
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          date[index].toString().substring(0, 10),
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        CircleAvatar(
                             backgroundColor: Colors.white,
                             child: Icon(
                               Icons.arrow_forward_ios,
                               color: Colors.grey.withOpacity(0.5),
-                            )),
-                      )
-                    ],
+                            ))
+                      ],
+                    ),
                   ),
                 ),
               );

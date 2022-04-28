@@ -1,8 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:skr_tracker/map_screen.dart';
-import 'package:skr_tracker/salesman_list_screen.dart';
+import 'package:skr_tracker/live_location/map_screen.dart';
+import 'package:skr_tracker/old_salesman/salesman_list_screen.dart';
 
 void main() {
   runApp(MyApp());

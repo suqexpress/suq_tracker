@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
-import 'package:skr_tracker/delivery_list.dart';
-import 'package:skr_tracker/salesman_list_screen.dart';
+import 'package:skr_tracker/delivery_screen/delivery_list.dart';
+import 'package:skr_tracker/old_salesman/salesman_list_screen.dart';
 
 class DeliveryMapScreen extends StatefulWidget {
   const DeliveryMapScreen({Key key}) : super(key: key);

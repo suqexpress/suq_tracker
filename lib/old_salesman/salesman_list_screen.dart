@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:skr_tracker/datelistforsalesman.dart';
+import 'package:skr_tracker/old_salesman/datelistforsalesman.dart';
 
 class SalesmanList extends StatefulWidget {
   @override
@@ -52,30 +52,30 @@ class _SalesmanListState extends State<SalesmanList> {
                     border: Border(
                         bottom:
                             BorderSide(color: Colors.grey.withOpacity(0.5)))),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        num[index],
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      InkWell(
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    DateListForSalesman(number: num[index]))),
-                        child: CircleAvatar(
+                child: InkWell(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              DateListForSalesman(number: num[index]))),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          num[index],
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        CircleAvatar(
                             backgroundColor: Colors.white,
                             child: Icon(
                               Icons.arrow_forward_ios,
                               color: Colors.grey.withOpacity(0.5),
-                            )),
-                      )
-                    ],
+                            ))
+                      ],
+                    ),
                   ),
                 ),
               );
