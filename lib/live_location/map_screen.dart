@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -139,12 +140,24 @@ class _MapScreenState extends State<MapScreen> {
       setState(() {});
     }
   }
-
+  displayshops() async{
+    var pointer = Marker(
+        markerId: MarkerId(lat.toString()),
+        position: LatLng(lat, long),
+        infoWindow: InfoWindow(
+            title: 'Hello'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueYellow,
+        ));
+    marker.add(pointer);
+    setState(() {});
+  }
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     getMarker();
     getLocation();
+    displayshops();
     // TODO: implement initState
     super.initState();
   }
